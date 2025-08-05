@@ -1,10 +1,29 @@
 
+import { db } from '../db';
+import { documentsTable } from '../db/schema';
 import { type IdParam } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export const deleteDocument = async (input: IdParam): Promise<{ success: boolean }> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is deleting a document and its file from storage.
-    // Should validate that document exists and user has delete permissions
-    // Should also remove the physical file from storage
-    return Promise.resolve({ success: true });
+  try {
+    // Check if document exists
+    const existingDocuments = await db.select()
+      .from(documentsTable)
+      .where(eq(documentsTable.id, input.id))
+      .execute();
+
+    if (existingDocuments.length === 0) {
+      throw new Error(`Document with id ${input.id} not found`);
+    }
+
+    // Delete the document record
+    const result = await db.delete(documentsTable)
+      .where(eq(documentsTable.id, input.id))
+      .execute();
+
+    return { success: true };
+  } catch (error) {
+    console.error('Document deletion failed:', error);
+    throw error;
+  }
 };

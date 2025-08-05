@@ -1,8 +1,17 @@
 
+import { db } from '../db';
+import { opdsTable } from '../db/schema';
 import { type OPD } from '../schema';
 
 export const getOPDs = async (): Promise<OPD[]> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all OPDs from the database.
-    return [];
+  try {
+    const results = await db.select()
+      .from(opdsTable)
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch OPDs:', error);
+    throw error;
+  }
 };
